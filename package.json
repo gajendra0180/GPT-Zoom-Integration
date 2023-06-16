@@ -1,0 +1,19 @@
+{
+  "name": "gpt-zoom-integration",
+  "version": "1.0.0",
+  "description": " Bot which joins Zoom meetings, interprets verbal input from participants, and responds verbally using GPT. The bot will convert the voice input from Zoom into text, process the text using GPT, convert the text response back into spoken word, and feed the response back through Zoom. The end goal is to be able to speak to GPT over Zoom.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gajendra0180/GPT-Zoom-Integration.git"
+  },
+  "author": "Gajendra Pal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gajendra0180/GPT-Zoom-Integration/issues"
+  },
+  "homepage": "https://github.com/gajendra0180/GPT-Zoom-Integration#readme"
+}
