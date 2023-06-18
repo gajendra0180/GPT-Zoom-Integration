@@ -106,7 +106,7 @@ function Meeting() {
               );
               clearInterval(refreshInterval);
             }
-            console.log(success, "Finally success");
+            console.log(success);
           },
           error: (error) => {
             console.log(error);
