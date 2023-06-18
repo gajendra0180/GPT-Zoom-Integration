@@ -1,2 +1,1 @@
-# GPT-Zoom-Integration
-# Please Checckout to the zoom-GPT-Integration
+# Please Checkout to the zoom-GPT-Integration
