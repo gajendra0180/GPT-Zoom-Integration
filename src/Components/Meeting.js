@@ -29,6 +29,9 @@ function Meeting() {
   var zakToken = "";
   // leave url is the url where user will be redirected after the meeting is over
   var leaveUrl = "https://zoom.us/";
+  const [element, setElement] = React.useState(
+    document.getElementsByClassName("footer__btns-container")
+  );
   function getSignature(e) {
     e.preventDefault();
     // Test the meetingURL against the regex ^https:\/\/us05web\.zoom\.us\/j\/\d+\?pwd=[a-zA-Z0-9]+$
@@ -85,18 +88,25 @@ function Meeting() {
           tk: registrantToken,
           zak: zakToken,
           success: (success) => {
-            // Render the speech to text component
-            const element = document.getElementsByClassName(
-              "footer__btns-container"
-            );
-            const createdElement = document.createElement("div");
-            createdElement.setAttribute("id", "custom-foot-bar");
-            element[0].appendChild(createdElement);
-            ReactDOM.render(
-              <SpeechText />,
-              document.getElementById("custom-foot-bar")
-            );
-            console.log(success);
+            // Check for the acceptance of the bot into the meeting every 2 seconds.If admitted then render the SpeechText component
+            var refreshInterval = setInterval(() => {
+              if (document.getElementsByClassName("footer__btns-container")) {
+                setElement(
+                  document.getElementsByClassName("footer__btns-container")
+                );
+              }
+            }, 2000);
+            if (element.length != 0) {
+              const createdElement = document.createElement("div");
+              createdElement.setAttribute("id", "custom-foot-bar");
+              element[0].appendChild(createdElement);
+              ReactDOM.render(
+                <SpeechText />,
+                document.getElementById("custom-foot-bar")
+              );
+              clearInterval(refreshInterval);
+            }
+            console.log(success, "Finally success");
           },
           error: (error) => {
             console.log(error);
