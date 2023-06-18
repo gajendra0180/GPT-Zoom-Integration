@@ -30,10 +30,9 @@ function SpeechText() {
   };
   const stopHandle = async () => {
     setIsListening(false);
-    console.log("Stopped Listening", transcript);
+    console.log("Stopped Listening And here is the transcript", transcript);
     microphoneRef.current.classList.remove("listening");
     SpeechRecognition.stopListening();
-    console.log(transcript, "This is the transcript");
     // After the the user has finished speaking we will send the transcript to the OpenAI API
     // Initialise the OpenAI APIs
     const configuration = new Configuration({
@@ -45,7 +44,10 @@ function SpeechText() {
       model: "gpt-3.5-turbo",
       messages: [{ role: "system", content: transcript }],
     });
-    console.log(completion.data.choices[0].message.content, "This is the data");
+    console.log(
+      completion.data.choices[0].message.content,
+      "This is the Response data from the GPT"
+    );
     // Text to Speech API
     var synthesis = window.speechSynthesis;
     if ("speechSynthesis" in window) {
@@ -65,7 +67,7 @@ function SpeechText() {
       utterance.volume = 1;
 
       // Speak the utterance
-      console.log("Speaking");
+      console.log("Synthesis is Speaking");
       synthesis.speak(utterance);
     } else {
       console.log("Text-to-speech not supported.");
