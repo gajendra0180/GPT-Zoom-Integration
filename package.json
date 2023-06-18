@@ -1,19 +1,45 @@
 {
-  "name": "gpt-zoom-integration",
-  "version": "1.0.0",
-  "description": " Bot which joins Zoom meetings, interprets verbal input from participants, and responds verbally using GPT. The bot will convert the voice input from Zoom into text, process the text using GPT, convert the text response back into spoken word, and feed the response back through Zoom. The end goal is to be able to speak to GPT over Zoom.",
-  "main": "app.js",
+  "name": "meetingsdk-sample-react",
+  "version": "2.13.0",
+  "author": "Zoom Video Communications, Inc.",
+  "contributors": [
+    {
+      "name": "Tommy Gaessler"
+    }
+  ],
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.14.5",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@zoomus/websdk": "^2.13.0",
+    "eslint": "5.6.0",
+    "jsrsasign": "^10.8.6",
+    "react": "^17.0.1",
+    "react-dev-utils": "^12.0.1",
+    "react-dom": "^17.0.1",
+    "react-scripts": "^2.1.3",
+    "react-speech-recognition": "^3.10.0",
+    "web-vitals": "^0.2.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gajendra0180/GPT-Zoom-Integration.git"
-  },
-  "author": "Gajendra Pal",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/gajendra0180/GPT-Zoom-Integration/issues"
-  },
-  "homepage": "https://github.com/gajendra0180/GPT-Zoom-Integration#readme"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
