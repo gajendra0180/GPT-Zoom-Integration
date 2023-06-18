@@ -1,128 +1,43 @@
 import React from "react";
-import { useRef, useState } from "react";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
-import "./App.css";
-import { ZoomMtg } from "@zoomus/websdk";
 import ReactDOM from "react-dom";
-const { Configuration, OpenAIApi } = require("openai");
+// Zoom Meeting SDK
+import { ZoomMtg } from "@zoomus/websdk";
+// CSS
+import "./App.css";
+// Components Import
+import SpeechText from "./Components/SpeechText";
 
-const KJUR = require("jsrsasign");
-
+// Zoom Meeting SDK Setup
 ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
-
 ZoomMtg.preLoadWasm();
 ZoomMtg.prepareWebSDK();
 ZoomMtg.i18n.load("en-US");
 ZoomMtg.i18n.reload("en-US");
 
-function Rend() {
-  const { transcript, resetTranscript } = useSpeechRecognition();
-  const [isListening, setIsListening] = useState(false);
-  const microphoneRef = useRef(null);
-
-  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
-    return (
-      <div className="mircophone-container">
-        Browser is not Support Speech Recognition.
-      </div>
-    );
-  }
-  const handleListing = () => {
-    setIsListening(true);
-    console.log("Started Listening");
-    microphoneRef.current.classList.add("listening");
-    SpeechRecognition.startListening({
-      continuous: true,
-    });
-  };
-  const stopHandle = async () => {
-    setIsListening(false);
-    console.log("Stopped Listening", transcript);
-    microphoneRef.current.classList.remove("listening");
-    SpeechRecognition.stopListening();
-    console.log(transcript, "This is the transcript");
-
-    const configuration = new Configuration({
-      apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(configuration);
-
-    const completion = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "system", content: transcript }],
-    });
-    console.log(completion.data.choices[0].message.content, "This is the data");
-    var synthesis = window.speechSynthesis;
-    if ("speechSynthesis" in window) {
-      // Get the first `en` language voice in the list
-      var voice = synthesis.getVoices().filter(function (voice) {
-        return voice.lang === "en";
-      })[0];
-
-      // Create an utterance object
-      var utterance = new SpeechSynthesisUtterance(
-        completion.data.choices[0].message.content
-        //"Hello World"
-      );
-      // Set utterance properties
-      utterance.voice = voice;
-      utterance.pitch = 1.5;
-      utterance.rate = 1.25;
-      utterance.volume = 0.8;
-
-      // Speak the utterance
-      console.log("Speaking");
-      synthesis.speak(utterance);
-    } else {
-      console.log("Text-to-speech not supported.");
-    }
-    resetTranscript();
-  };
-  return (
-    <div className="microphone-wrapper">
-      <div className="mircophone-container">
-        <div
-          className="microphone-icon-container"
-          ref={microphoneRef}
-          onClick={handleListing}
-        >
-          <img
-            src="https://svgur.com/i/uPm.svg"
-            alt="micropohne"
-            className="microphone-icon"
-          />
-        </div>
-        <div className="microphone-status">
-          {isListening ? "Listening........." : ""}
-        </div>
-        {isListening && (
-          <button className="btn" onClick={stopHandle}>
-            Stop
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+const KJUR = require("jsrsasign");
 
 function App() {
   var sdkKey = process.env.REACT_APP_ZOOM_MEETING_SDK_KEY;
-  var meetingNumber = "4067023442";
-  var passWord = process.env.REACT_APP_ZOOM_MEETING_PASSWORD;
+  // Meeting Credentials
+  var meetingURL = "";
+  var meetingNumber = "";
+  var passWord = "";
+  // role 0 means user and 1 means host
   var role = 0;
-  var userName = "React";
+  var userName = "BOT";
   var userEmail = "";
   var registrantToken = "";
   var zakToken = "";
-  var leaveUrl = "http://localhost:3000";
+  // leave url is the url where user will be redirected after the meeting is over
+  var leaveUrl = "https://zoom.us/";
   function getSignature(e) {
     e.preventDefault();
-
+    // Extract the meeting number and password from the meeting URL
+    passWord = meetingURL.split("?")[1].split("=")[1];
+    meetingNumber = meetingURL.split("?")[0].split("/")[4];
+    // Stanadard procedure to generate the signature
     const iat = Math.round(new Date().getTime() / 1000) - 30;
     const exp = iat + 60 * 60 * 2;
-
     const oHeader = { alg: "HS256", typ: "JWT" };
     const oPayload = {
       sdkKey: process.env.REACT_APP_ZOOM_MEETING_SDK_KEY,
@@ -141,11 +56,13 @@ function App() {
       sPayload,
       process.env.REACT_APP_ZOOM_MEETING_SDK_SECRET
     );
+    console.log(meetingNumber, passWord);
     startMeeting(signature);
   }
 
   function startMeeting(signature) {
     document.getElementById("zmmtg-root").style.display = "block";
+    // When initialised the Meeting SDK adds new elements to the DOM to handle client overlays and accessibility elements.
     ZoomMtg.init({
       leaveUrl: leaveUrl,
       success: (success) => {
@@ -159,6 +76,7 @@ function App() {
           tk: registrantToken,
           zak: zakToken,
           success: (success) => {
+            // Render the speech to text component
             const element = document.getElementsByClassName(
               "footer__btns-container"
             );
@@ -166,7 +84,7 @@ function App() {
             createdElement.setAttribute("id", "custom-foot-bar");
             element[0].appendChild(createdElement);
             ReactDOM.render(
-              <Rend />,
+              <SpeechText />,
               document.getElementById("custom-foot-bar")
             );
             console.log(success);
@@ -184,12 +102,16 @@ function App() {
   return (
     <div className="App">
       <main>
-        <h1>Zoom Meeting SDK Sample React</h1>
-
-        {/* For Component View */}
-        <div id="meetingSDKElement">
-          {/* Zoom Meeting SDK Component View Rendered Here */}
-        </div>
+        <h1>GPT Zoom Integration</h1>
+        <label>Meeting URL</label>
+        <input
+          type="text"
+          id="meetingURL"
+          defaultValue={meetingURL}
+          onChange={(e) => {
+            meetingURL = e.target.value;
+          }}
+        />
         <button onClick={getSignature}>Join Meeting</button>
       </main>
     </div>
