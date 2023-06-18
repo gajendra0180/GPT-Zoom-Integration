@@ -4,9 +4,9 @@ import ReactDOM from "react-dom";
 import { ZoomMtg } from "@zoomus/websdk";
 // Components Import
 import SpeechText from "./SpeechText";
-// Zoom Meeting SDK Setup
 // CSS
 import "./Meeting.css";
+// Zoom Meeting SDK Setup
 ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
 ZoomMtg.preLoadWasm();
 ZoomMtg.prepareWebSDK();
