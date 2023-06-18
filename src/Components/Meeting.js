@@ -68,7 +68,6 @@ function Meeting() {
       sPayload,
       process.env.REACT_APP_ZOOM_MEETING_SDK_SECRET
     );
-    console.log(meetingNumber, passWord);
     startMeeting(signature);
   }
 
