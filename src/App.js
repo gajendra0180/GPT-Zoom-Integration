@@ -14,7 +14,6 @@ ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
 
 ZoomMtg.preLoadWasm();
 ZoomMtg.prepareWebSDK();
-// loads language files, also passes any error messages to the ui
 ZoomMtg.i18n.load("en-US");
 ZoomMtg.i18n.reload("en-US");
 
@@ -57,8 +56,6 @@ function Rend() {
     console.log(completion.data.choices[0].message.content, "This is the data");
     var synthesis = window.speechSynthesis;
     if ("speechSynthesis" in window) {
-      var synthesis = window.speechSynthesis;
-
       // Get the first `en` language voice in the list
       var voice = synthesis.getVoices().filter(function (voice) {
         return voice.lang === "en";
@@ -69,7 +66,6 @@ function Rend() {
         completion.data.choices[0].message.content
         //"Hello World"
       );
-      console.log(utterance, "This is the utterance");
       // Set utterance properties
       utterance.voice = voice;
       utterance.pitch = 1.5;
@@ -92,15 +88,17 @@ function Rend() {
           ref={microphoneRef}
           onClick={handleListing}
         >
-          <img alt="micropohne" className="microphone-icon" />
+          <img
+            src="https://svgur.com/i/uPm.svg"
+            alt="micropohne"
+            className="microphone-icon"
+          />
         </div>
         <div className="microphone-status">
-          {isListening ? "Listening........." : "Click to start Listening"}
+          {isListening ? "Listening........." : ""}
         </div>
-        {console.log(isListening, "This is the is listening")}
-        {console.log("Rerendered")}
         {isListening && (
-          <button className="microphone-stop btn" onClick={stopHandle}>
+          <button className="btn" onClick={stopHandle}>
             Stop
           </button>
         )}
@@ -111,7 +109,7 @@ function Rend() {
 
 function App() {
   var sdkKey = process.env.REACT_APP_ZOOM_MEETING_SDK_KEY;
-  var meetingNumber = "85358869476";
+  var meetingNumber = "4067023442";
   var passWord = process.env.REACT_APP_ZOOM_MEETING_PASSWORD;
   var role = 0;
   var userName = "React";
@@ -119,7 +117,6 @@ function App() {
   var registrantToken = "";
   var zakToken = "";
   var leaveUrl = "http://localhost:3000";
-
   function getSignature(e) {
     e.preventDefault();
 
@@ -127,10 +124,6 @@ function App() {
     const exp = iat + 60 * 60 * 2;
 
     const oHeader = { alg: "HS256", typ: "JWT" };
-    console.log(
-      "process.env.ZOOM_MEETING_SDK_KEY",
-      process.env.REACT_APP_ZOOM_MEETING_SDK_KEY
-    );
     const oPayload = {
       sdkKey: process.env.REACT_APP_ZOOM_MEETING_SDK_KEY,
       mn: meetingNumber,
@@ -140,7 +133,6 @@ function App() {
       appKey: process.env.REACT_APP_ZOOM_MEETING_SDK_KEY,
       tokenExp: iat + 60 * 60 * 2,
     };
-    console.log(oPayload, "This is the payload");
     const sHeader = JSON.stringify(oHeader);
     const sPayload = JSON.stringify(oPayload);
     const signature = KJUR.jws.JWS.sign(
@@ -149,7 +141,6 @@ function App() {
       sPayload,
       process.env.REACT_APP_ZOOM_MEETING_SDK_SECRET
     );
-    console.log(signature, "This is the signature");
     startMeeting(signature);
   }
 
@@ -158,7 +149,6 @@ function App() {
     ZoomMtg.init({
       leaveUrl: leaveUrl,
       success: (success) => {
-        console.log(success, "This is sucess");
         ZoomMtg.join({
           signature: signature,
           sdkKey: sdkKey,
