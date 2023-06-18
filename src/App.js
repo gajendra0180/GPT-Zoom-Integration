@@ -5,6 +5,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import "./App.css";
 import { ZoomMtg } from "@zoomus/websdk";
+import ReactDOM from "react-dom";
 const KJUR = require("jsrsasign");
 
 ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
@@ -15,7 +16,7 @@ ZoomMtg.prepareWebSDK();
 ZoomMtg.i18n.load("en-US");
 ZoomMtg.i18n.reload("en-US");
 
-function App() {
+function Rend() {
   const { transcript, resetTranscript } = useSpeechRecognition();
   const [isListening, setIsListening] = useState(false);
   const microphoneRef = useRef(null);
@@ -46,7 +47,41 @@ function App() {
     stopHandle();
     resetTranscript();
   };
+  return (
+    <div className="microphone-wrapper">
+      <div className="mircophone-container">
+        <div
+          className="microphone-icon-container"
+          ref={microphoneRef}
+          onClick={handleListing}
+        >
+          <img alt="micropohne" className="microphone-icon" />
+        </div>
+        <div className="microphone-status">
+          {isListening ? "Listening........." : "Click to start Listening"}
+        </div>
+        {console.log(isListening, "This is the is listening")}
+        {console.log("Rerendered")}
+        {isListening && (
+          <button className="microphone-stop btn" onClick={stopHandle}>
+            Stop
+          </button>
+        )}
+      </div>
 
+      {transcript && (
+        <div className="microphone-result-container">
+          <div className="microphone-result-text">{transcript}</div>
+          <button className="microphone-reset btn" onClick={handleReset}>
+            Reset
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
   var authEndpoint = "http://localhost:4000";
   var sdkKey = process.env.REACT_APP_ZOOM_MEETING_SDK_KEY;
   var meetingNumber = "4067023442";
@@ -106,10 +141,20 @@ function App() {
           tk: registrantToken,
           zak: zakToken,
           success: (success) => {
-            console.log(success, "We are success");
+            const element = document.getElementsByClassName(
+              "footer__btns-container"
+            );
+            const createdElement = document.createElement("div");
+            createdElement.setAttribute("id", "custom-foot-bar");
+            element[0].appendChild(createdElement);
+            ReactDOM.render(
+              <Rend />,
+              document.getElementById("custom-foot-bar")
+            );
+            console.log(success);
           },
           error: (error) => {
-            console.log(error, "This is ht errr");
+            console.log(error);
           },
         });
       },
@@ -123,6 +168,10 @@ function App() {
       <main>
         <h1>Zoom Meeting SDK Sample React</h1>
 
+        {/* For Component View */}
+        <div id="meetingSDKElement">
+          {/* Zoom Meeting SDK Component View Rendered Here */}
+        </div>
         <button onClick={getSignature}>Join Meeting</button>
       </main>
     </div>
