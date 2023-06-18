@@ -6,6 +6,8 @@ import SpeechRecognition, {
 import "./App.css";
 import { ZoomMtg } from "@zoomus/websdk";
 import ReactDOM from "react-dom";
+const { Configuration, OpenAIApi } = require("openai");
+
 const KJUR = require("jsrsasign");
 
 ZoomMtg.setZoomJSLib("https://source.zoom.us/2.13.0/lib", "/av");
@@ -36,15 +38,50 @@ function Rend() {
       continuous: true,
     });
   };
-  const stopHandle = () => {
+  const stopHandle = async () => {
     setIsListening(false);
-    console.log("Stopped Listening");
+    console.log("Stopped Listening", transcript);
     microphoneRef.current.classList.remove("listening");
     SpeechRecognition.stopListening();
     console.log(transcript, "This is the transcript");
-  };
-  const handleReset = () => {
-    stopHandle();
+
+    const configuration = new Configuration({
+      apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "system", content: transcript }],
+    });
+    console.log(completion.data.choices[0].message.content, "This is the data");
+    var synthesis = window.speechSynthesis;
+    if ("speechSynthesis" in window) {
+      var synthesis = window.speechSynthesis;
+
+      // Get the first `en` language voice in the list
+      var voice = synthesis.getVoices().filter(function (voice) {
+        return voice.lang === "en";
+      })[0];
+
+      // Create an utterance object
+      var utterance = new SpeechSynthesisUtterance(
+        completion.data.choices[0].message.content
+        //"Hello World"
+      );
+      console.log(utterance, "This is the utterance");
+      // Set utterance properties
+      utterance.voice = voice;
+      utterance.pitch = 1.5;
+      utterance.rate = 1.25;
+      utterance.volume = 0.8;
+
+      // Speak the utterance
+      console.log("Speaking");
+      synthesis.speak(utterance);
+    } else {
+      console.log("Text-to-speech not supported.");
+    }
     resetTranscript();
   };
   return (
@@ -68,23 +105,13 @@ function Rend() {
           </button>
         )}
       </div>
-
-      {transcript && (
-        <div className="microphone-result-container">
-          <div className="microphone-result-text">{transcript}</div>
-          <button className="microphone-reset btn" onClick={handleReset}>
-            Reset
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
 function App() {
-  var authEndpoint = "http://localhost:4000";
   var sdkKey = process.env.REACT_APP_ZOOM_MEETING_SDK_KEY;
-  var meetingNumber = "4067023442";
+  var meetingNumber = "85358869476";
   var passWord = process.env.REACT_APP_ZOOM_MEETING_PASSWORD;
   var role = 0;
   var userName = "React";
@@ -92,6 +119,7 @@ function App() {
   var registrantToken = "";
   var zakToken = "";
   var leaveUrl = "http://localhost:3000";
+
   function getSignature(e) {
     e.preventDefault();
 
