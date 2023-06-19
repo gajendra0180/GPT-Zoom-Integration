@@ -1,10 +1,10 @@
 {
-  "name": "meetingsdk-sample-react",
+  "name": "GPT Zoom Integration",
   "version": "2.13.0",
-  "author": "Zoom Video Communications, Inc.",
+  "author": "Gajendra",
   "contributors": [
     {
-      "name": "Tommy Gaessler"
+      "name": "Gajendra"
     }
   ],
   "homepage": "",
